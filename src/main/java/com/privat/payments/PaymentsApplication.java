@@ -9,5 +9,5 @@ public class PaymentsApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PaymentsApplication.class, args);
 	}
-
+//todo add a sheduler
 }
