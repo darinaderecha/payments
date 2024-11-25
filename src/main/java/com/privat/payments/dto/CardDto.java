@@ -11,6 +11,5 @@ public record CardDto(UUID cardId,
                       String cvv,
                       LocalDate expirationDate,
                       String IBAN,
-                      Boolean isActive,
                       Double balance) {
 }

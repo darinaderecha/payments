@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS card (
     cvv VARCHAR(3) NOT NULL,
     expiration_date TIMESTAMP NOT NULL,
     iban VARCHAR(29) UNIQUE NOT NULL,
-    is_active BOOLEAN,
     balance DOUBLE PRECISION,
     CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES client(client_id)
 );
@@ -17,7 +16,6 @@ CREATE TABLE IF NOT EXISTS regular_payment (
     mfo VARCHAR(6)  NOT NULL,
     zkpo VARCHAR(10) NOT NULL,
     receiver_name VARCHAR(255) NOT NULL,
-    is_active BOOLEAN,
     amount DOUBLE PRECISION,
     CONSTRAINT fk_card FOREIGN KEY (card_id) REFERENCES card(card_id)
 );

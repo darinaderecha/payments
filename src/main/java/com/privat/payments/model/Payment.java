@@ -26,8 +26,6 @@ public class Payment {
 
     private String receiverName;
 
-    private Boolean isActive;
-
     private Double amount;
 
     private Timestamp withdrawalPeriod;
@@ -41,7 +39,6 @@ public class Payment {
                    String mfo,
                    String zkpo,
                    String receiverName,
-                   Boolean isActive,
                    Double amount,
                    Timestamp withdrawalPeriod) {
         this.regularPaymentId = regularPaymentId;
@@ -50,7 +47,6 @@ public class Payment {
         this.mfo = mfo;
         this.zkpo = zkpo;
         this.receiverName = receiverName;
-        this.isActive = isActive;
         this.amount = amount;
         this.withdrawalPeriod = withdrawalPeriod;
     }
@@ -101,14 +97,6 @@ public class Payment {
 
     public void setReceiverName(String receiverName) {
         this.receiverName = receiverName;
-    }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
     }
 
     public Double getAmount() {

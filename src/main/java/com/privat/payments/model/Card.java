@@ -26,11 +26,9 @@ public class Card {
 
     private String iban;
 
-    private Boolean isActive;
-
     private Double balance;
 
-    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "card")
     private List<Payment> payments;
 
 
@@ -43,7 +41,6 @@ public class Card {
                 String cvv,
                 LocalDate expirationDate,
                 String iban,
-                Boolean isActive,
                 Double balance) {
         this.cardId = cardId;
         this.client = client;
@@ -51,7 +48,6 @@ public class Card {
         this.cvv = cvv;
         this.expirationDate = expirationDate;
         this.iban = iban;
-        this.isActive = isActive;
         this.balance = balance;
     }
 
@@ -101,14 +97,6 @@ public class Card {
 
     public void setIban(String iban) {
         this.iban = iban;
-    }
-
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
     }
 
     public Double getBalance() {

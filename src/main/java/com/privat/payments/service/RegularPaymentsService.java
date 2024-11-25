@@ -2,8 +2,10 @@ package com.privat.payments.service;
 
 import com.privat.payments.dto.PaymentCreateDto;
 import com.privat.payments.model.Card;
+import com.privat.payments.model.Charge;
 import com.privat.payments.model.Payment;
 import com.privat.payments.repository.CardRepository;
+import com.privat.payments.repository.ChargeRepository;
 import com.privat.payments.repository.RegularPaymentsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -15,33 +17,26 @@ import java.util.UUID;
 public class RegularPaymentsService {
     private RegularPaymentsRepository paymentsRepository;
     private CardRepository cardRepository;
+    private ChargeRepository chargeRepository;
 
     public RegularPaymentsService(RegularPaymentsRepository paymentsRepository,
-                                  CardRepository cardRepository) {
+                                  CardRepository cardRepository,
+                                  ChargeRepository chargeRepository) {
         this.paymentsRepository = paymentsRepository;
         this.cardRepository = cardRepository;
+        this.chargeRepository = chargeRepository;
+
     }
 
     public Payment registerPaymentByCardId(PaymentCreateDto paymentDto) {
         Card card = cardRepository.findById(paymentDto.card())
                 .orElseThrow(() -> new EntityNotFoundException("Card not found with ID: " + paymentDto.card()));
-        return savePayment(paymentDto, card);
-    }
-
-    public Payment registerPaymentByIBAN(PaymentCreateDto paymentDto, String iban){
-        Card card = cardRepository.findByIBAN(iban)
-                .orElseThrow(() -> new EntityNotFoundException("Card not found with IBAN: " + iban ));
-        return savePayment(paymentDto, card);
-    }
-
-    private Payment savePayment(PaymentCreateDto paymentDto, Card card) {
         Payment payment = new Payment();
         payment.setCard(card);
         payment.setIban(paymentDto.IBAN());
         payment.setMfo(paymentDto.MFO());
         payment.setZkpo(paymentDto.ZKPO());
         payment.setReceiverName(paymentDto.receiverName());
-        payment.setActive(paymentDto.isActive());
         payment.setAmount(paymentDto.amount());
         return paymentsRepository.save(payment);
     }
@@ -68,7 +63,7 @@ public class RegularPaymentsService {
     }
 
     //get payment by id regular
-    public Payment findPaymentById(UUID paymentId) {
+    private Payment findPaymentById(UUID paymentId) {
         return paymentsRepository.findById(paymentId)
                 .orElseThrow(() -> new EntityNotFoundException("Payment not found"));
     }
@@ -87,6 +82,60 @@ public class RegularPaymentsService {
             throw new EntityNotFoundException("Regular payments not found for receiver ZKPO: " + zkpo);
         }
         return payments;
+    }
+
+    public Charge saveCharge(Charge charge) {
+        return chargeRepository.save(charge);
+    }
+
+    public Charge updateCharge(UUID chargeId, Charge charge) {
+        Charge existingCharge = chargeRepository.findById(chargeId)
+                .orElseThrow(() -> new EntityNotFoundException("Charge not found"));
+
+        // Update details
+        //todo remake details
+
+        return chargeRepository.save(existingCharge);
+    }
+
+    public void deleteCharge(UUID chargeId) {
+        if (!chargeRepository.existsById(chargeId)) {
+            throw new EntityNotFoundException("Charge not found");
+        }
+        chargeRepository.deleteById(chargeId);
+    }
+
+    public Charge findChargeById(UUID chargeId) {
+        return chargeRepository.findById(chargeId)
+                .orElseThrow(() -> new EntityNotFoundException("Charge not found"));
+    }
+
+    public List<Charge> findChargeByRegularPayment(UUID regularPaymentId) {
+        List<Charge> charges = chargeRepository.findByRegularPaymentId((regularPaymentId));
+        if (charges.isEmpty()) {
+            throw new EntityNotFoundException("Charges not found for RegularPayment ID: " + regularPaymentId);
+        }
+        return charges;
+    }
+
+    public Charge makeCharge(UUID paymentId) {
+
+        //1.validate charge: find ChargeBNyRegularPayment
+        //find last charge
+        //if charge was withdrowed comparing last time and now
+        //if its first checj cronos and now
+        //if it ccurrent check last and now nd check if it doesn't exeeds term
+        //if term is more often then 4 hours - count how many withdrals should be in between
+        //test if withrawal each 4 hours
+        return null;
+    }
+
+    public Boolean checkIfNeedToWithdraw(){
+        return null;
+    }
+    public Charge deleteCharge() {
+        //returmn money on bank account
+    return null;
     }
 
 }

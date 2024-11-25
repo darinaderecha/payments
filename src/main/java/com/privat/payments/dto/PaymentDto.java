@@ -11,7 +11,6 @@ public record PaymentDto(UUID id,
                          String MFO,
                          String ZKPO,
                          String receiverName,
-                         Boolean isActive,
                          Double amount,
                          Timestamp withdrawalPeriod) {
 }

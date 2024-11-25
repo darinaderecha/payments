@@ -1,0 +1,5 @@
+--ALTER TABLE IF EXISTS regular_payment
+--DROP COLUMN IF EXISTS withdrawal_period timestamp;
+--
+--ALTER TABLE IF EXISTS regular_payment
+--ADD COLUMN IF NOT EXISTS frequency VARCHAR(255);
