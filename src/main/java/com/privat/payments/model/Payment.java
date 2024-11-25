@@ -1,7 +1,9 @@
 package com.privat.payments.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
@@ -9,40 +11,58 @@ import java.util.UUID;
 public class Payment {
 
     @Id
-    @Column(name = "regular_payment_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID regularPaymentId;
 
-    @Column(name = "card_id")
-    @ManyToMany
+    @ManyToOne
     @JoinColumn(name = "card_id")
     private Card card;
 
-    @Column(name = "iban")
-    private String IBAN;
+    private String iban;
 
-    @Column(name = "mfo")
-    private String MFO;
+    private String mfo;
 
-    @Column(name = "zkpo")
-    private String ZKPO;
+    private String zkpo;
 
-    @Column(name = "receiver_name")
     private String receiverName;
 
-    @Column(name = "is_active")
     private Boolean isActive;
 
-    @Column(name = "amount")
     private Double amount;
 
-    public UUID getId() {
-        return id;
+    private Timestamp withdrawalPeriod;
+
+    public Payment() {
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public Payment(UUID regularPaymentId,
+                   Card card,
+                   String iban,
+                   String mfo,
+                   String zkpo,
+                   String receiverName,
+                   Boolean isActive,
+                   Double amount,
+                   Timestamp withdrawalPeriod) {
+        this.regularPaymentId = regularPaymentId;
+        this.card = card;
+        this.iban = iban;
+        this.mfo = mfo;
+        this.zkpo = zkpo;
+        this.receiverName = receiverName;
+        this.isActive = isActive;
+        this.amount = amount;
+        this.withdrawalPeriod = withdrawalPeriod;
     }
 
+    public UUID getRegularPaymentId() {
+        return regularPaymentId;
+    }
+
+    public void setRegularPaymentId(UUID regularPaymentId) {
+        this.regularPaymentId = regularPaymentId;
+    }
+    @JsonIgnore
     public Card getCard() {
         return card;
     }
@@ -51,28 +71,28 @@ public class Payment {
         this.card = card;
     }
 
-    public String getIBAN() {
-        return IBAN;
+    public String getIban() {
+        return iban;
     }
 
-    public void setIBAN(String IBAN) {
-        this.IBAN = IBAN;
+    public void setIban(String iban) {
+        this.iban = iban;
     }
 
-    public String getMFO() {
-        return MFO;
+    public String getMfo() {
+        return mfo;
     }
 
-    public void setMFO(String MFO) {
-        this.MFO = MFO;
+    public void setMfo(String mfo) {
+        this.mfo = mfo;
     }
 
-    public String getZKPO() {
-        return ZKPO;
+    public String getZkpo() {
+        return zkpo;
     }
 
-    public void setZKPO(String ZKPO) {
-        this.ZKPO = ZKPO;
+    public void setZkpo(String zkpo) {
+        this.zkpo = zkpo;
     }
 
     public String getReceiverName() {
@@ -97,5 +117,13 @@ public class Payment {
 
     public void setAmount(Double amount) {
         this.amount = amount;
+    }
+
+    public Timestamp getWithdrawalPeriod() {
+        return withdrawalPeriod;
+    }
+
+    public void setWithdrawalPeriod(Timestamp withdrawalPeriod) {
+        this.withdrawalPeriod = withdrawalPeriod;
     }
 }

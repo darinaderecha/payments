@@ -1,17 +1,17 @@
 package com.privat.payments.dto;
 
 import com.privat.payments.model.Card;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
-public record PaymentCreateDto(Card card,
+
+public record PaymentCreateDto(UUID card,
                                String IBAN,
                                String MFO,
                                String ZKPO,
                                String receiverName,
                                Boolean isActive,
-                               Double amount) {
+                               Double amount,
+                               Timestamp withdrawalPeriod) {
 }

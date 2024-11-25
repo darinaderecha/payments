@@ -3,6 +3,7 @@ package com.privat.payments.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -10,47 +11,56 @@ import java.util.UUID;
 public class Card {
 
     @Id
-    @Column(name = "card_id")
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID cardId;
 
-    @Column(name ="client_id")
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
-    @Column(name ="card_number")
     private String cardNumber;
 
-    @Column(name ="cvv")
     private String cvv;
 
-    @Column(name ="expiration_date")
     private LocalDate expirationDate;
 
-    @Column(name ="iban")
-    private String IBAN;
+    private String iban;
 
-    @Column(name ="is_active")
     private Boolean isActive;
 
-    @Column(name ="is_credit_card")
-    private Boolean isCreditCard;
-
-    @Column(name ="balance")
     private Double balance;
 
-    @Column(name ="credit_limit")
-    private Double creditLimit;
+    @OneToMany(mappedBy = "card", fetch = FetchType.LAZY)
+    private List<Payment> payments;
 
-    @Column(name ="brand")
-    private CardBrand brand;
 
-    public UUID getId() {
-        return id;
+    public Card() {
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public Card(UUID cardId,
+                Client client,
+                String cardNumber,
+                String cvv,
+                LocalDate expirationDate,
+                String iban,
+                Boolean isActive,
+                Double balance) {
+        this.cardId = cardId;
+        this.client = client;
+        this.cardNumber = cardNumber;
+        this.cvv = cvv;
+        this.expirationDate = expirationDate;
+        this.iban = iban;
+        this.isActive = isActive;
+        this.balance = balance;
+    }
+
+    public UUID getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(UUID cardId) {
+        this.cardId = cardId;
     }
 
     public Client getClient() {
@@ -85,12 +95,12 @@ public class Card {
         this.expirationDate = expirationDate;
     }
 
-    public String getIBAN() {
-        return IBAN;
+    public String getIban() {
+        return iban;
     }
 
-    public void setIBAN(String IBAN) {
-        this.IBAN = IBAN;
+    public void setIban(String iban) {
+        this.iban = iban;
     }
 
     public Boolean getActive() {
@@ -101,14 +111,6 @@ public class Card {
         isActive = active;
     }
 
-    public Boolean getCreditCard() {
-        return isCreditCard;
-    }
-
-    public void setCreditCard(Boolean creditCard) {
-        isCreditCard = creditCard;
-    }
-
     public Double getBalance() {
         return balance;
     }
@@ -117,19 +119,4 @@ public class Card {
         this.balance = balance;
     }
 
-    public Double getCreditLimit() {
-        return creditLimit;
-    }
-
-    public void setCreditLimit(Double creditLimit) {
-        this.creditLimit = creditLimit;
-    }
-
-    public CardBrand getBrand() {
-        return brand;
-    }
-
-    public void setBrand(CardBrand brand) {
-        this.brand = brand;
-    }
 }

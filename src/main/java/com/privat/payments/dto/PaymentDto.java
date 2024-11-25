@@ -2,6 +2,7 @@ package com.privat.payments.dto;
 
 import com.privat.payments.model.Card;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 public record PaymentDto(UUID id,
@@ -11,5 +12,6 @@ public record PaymentDto(UUID id,
                          String ZKPO,
                          String receiverName,
                          Boolean isActive,
-                         Double amount) {
+                         Double amount,
+                         Timestamp withdrawalPeriod) {
 }
