@@ -3,6 +3,7 @@ package com.privat.payments.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.quartz.CronExpression;
 
 import java.sql.Timestamp;
 import java.util.UUID;

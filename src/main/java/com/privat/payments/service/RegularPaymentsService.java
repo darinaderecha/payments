@@ -8,9 +8,14 @@ import com.privat.payments.repository.CardRepository;
 import com.privat.payments.repository.ChargeRepository;
 import com.privat.payments.repository.RegularPaymentsRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.quartz.CronExpression;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -105,21 +110,36 @@ public class RegularPaymentsService {
         chargeRepository.deleteById(chargeId);
     }
 
-    public Charge findChargeById(UUID chargeId) {
+    private Charge findChargeById(UUID chargeId) {
         return chargeRepository.findById(chargeId)
-                .orElseThrow(() -> new EntityNotFoundException("Charge not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Charge not found by id: " + chargeId));
     }
 
     public List<Charge> findChargeByRegularPayment(UUID regularPaymentId) {
-        List<Charge> charges = chargeRepository.findByRegularPaymentId((regularPaymentId));
-        if (charges.isEmpty()) {
-            throw new EntityNotFoundException("Charges not found for RegularPayment ID: " + regularPaymentId);
-        }
-        return charges;
+//        List<Charge> charges = chargeRepository.findByRegularPaymentId((regularPaymentId));
+//        if (charges.isEmpty()) {
+//            throw new EntityNotFoundException("Charges not found for RegularPayment ID: " + regularPaymentId);
+//        }
+//        return charges;
+        return chargeRepository.findByRegularPaymentId(regularPaymentId);
     }
 
     public Charge makeCharge(UUID paymentId) {
-
+        Payment payment;
+        try {
+            payment = findPaymentById(paymentId);
+        }catch (EntityNotFoundException e){
+            //add log
+            throw new IllegalArgumentException("Invalid payment ID: " + paymentId, e);
+        }
+        List<Charge> charges = findChargeByRegularPayment(paymentId);
+        if (charges.isEmpty()){
+            try {
+                validateIfNeedMakeCharge(payment.getWithdrawalPeriod());
+            } catch (ParseException e) {
+                throw new RuntimeException("Can not parse expression " + payment.getWithdrawalPeriod(), e);
+            }
+        }
         //1.validate charge: find ChargeBNyRegularPayment
         //find last charge
         //if charge was withdrowed comparing last time and now
@@ -128,6 +148,12 @@ public class RegularPaymentsService {
         //if term is more often then 4 hours - count how many withdrals should be in between
         //test if withrawal each 4 hours
         return null;
+    }
+
+    private void validateIfNeedMakeCharge(String withdrawalPeriod) throws ParseException {
+        CronExpression.validateExpression(withdrawalPeriod);
+
+
     }
 
     public Boolean checkIfNeedToWithdraw(){
