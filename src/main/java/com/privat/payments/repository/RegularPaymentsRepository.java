@@ -1,7 +1,6 @@
 package com.privat.payments.repository;
 
 import com.privat.payments.model.Payment;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,8 +16,8 @@ public interface RegularPaymentsRepository extends JpaRepository<Payment, UUID> 
             "FROM Payment p " +
             "JOIN p.card c " +
             "JOIN c.client cl " +
-            "WHERE cl.tin = :tin")
-    List<Payment> findByClientTIN(@Param("tin") String tin);
+            "WHERE cl.itn = :itn")
+    List<Payment> findByClientITN(@Param("itn") String itn);
 
     @Query("SELECT p " +
             "FROM Payment p " +

@@ -2,6 +2,7 @@ package com.privat.payments.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +15,7 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID cardId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
 
@@ -26,7 +27,7 @@ public class Card {
 
     private String iban;
 
-    private Double balance;
+    private BigDecimal balance;
 
     @OneToMany(mappedBy = "card")
     private List<Payment> payments;
@@ -41,7 +42,7 @@ public class Card {
                 String cvv,
                 LocalDate expirationDate,
                 String iban,
-                Double balance) {
+                BigDecimal balance) {
         this.cardId = cardId;
         this.client = client;
         this.cardNumber = cardNumber;
@@ -99,12 +100,11 @@ public class Card {
         this.iban = iban;
     }
 
-    public Double getBalance() {
+    public BigDecimal getBalance() {
         return balance;
     }
 
-    public void setBalance(Double balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
-
 }

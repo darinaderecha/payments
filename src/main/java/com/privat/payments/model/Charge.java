@@ -2,6 +2,7 @@ package com.privat.payments.model;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -19,7 +20,7 @@ public class Charge {
 
     private LocalDateTime chargeTime;
 
-    private Double amount;
+    private BigDecimal amount;
 
     private Status status;
 
@@ -29,7 +30,7 @@ public class Charge {
     public Charge(UUID chargeId,
                   Payment payment,
                   LocalDateTime chargeTime,
-                  Double amount,
+                  BigDecimal amount,
                   Status status) {
         this.chargeId = chargeId;
         this.payment = payment;
@@ -62,11 +63,11 @@ public class Charge {
         this.chargeTime = chargeTime;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

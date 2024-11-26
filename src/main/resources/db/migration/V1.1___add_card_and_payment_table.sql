@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS card (
     cvv VARCHAR(3) NOT NULL,
     expiration_date TIMESTAMP NOT NULL,
     iban VARCHAR(29) UNIQUE NOT NULL,
-    balance DOUBLE PRECISION,
+    balance NUMERIC,
     CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES client(client_id)
 );
 
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS regular_payment (
     mfo VARCHAR(6)  NOT NULL,
     zkpo VARCHAR(10) NOT NULL,
     receiver_name VARCHAR(255) NOT NULL,
-    amount DOUBLE PRECISION,
+    amount NUMERIC,
     CONSTRAINT fk_card FOREIGN KEY (card_id) REFERENCES card(card_id)
 );
 
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS charge (
     charge_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     charge_time TIMESTAMP,
     regular_payment_id UUID NOT NULL,
-    amount DOUBLE PRECISION,
+    amount NUMERIC,
     status CHAR(1) CHECK (status IN ('A', 'S')),
     CONSTRAINT fk_regular_payment FOREIGN KEY (regular_payment_id) REFERENCES regular_payment(regular_payment_id)
 );

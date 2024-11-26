@@ -2,7 +2,6 @@ package com.privat.payments.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,7 +15,7 @@ public class Client {
 
     private String name;
 
-    private String tin;
+    private String itn;
 
     @OneToMany(mappedBy = "client")
     private List<Card> cards;
@@ -26,10 +25,10 @@ public class Client {
 
     public Client(UUID clientId,
                   String name,
-                  String tin) {
+                  String itn) {
         this.clientId = clientId;
         this.name = name;
-        this.tin = tin;
+        this.itn = itn;
     }
 
     public UUID getClientId() {
@@ -48,12 +47,12 @@ public class Client {
         this.name = name;
     }
 
-    public String getTin() {
-        return tin;
+    public String getItn() {
+        return itn;
     }
 
-    public void setTin(String tin) {
-        this.tin = tin;
+    public void setItn(String tin) {
+        this.itn = tin;
     }
 
     public List<Card> getCards() {

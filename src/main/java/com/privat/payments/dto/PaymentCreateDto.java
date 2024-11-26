@@ -3,9 +3,8 @@ package com.privat.payments.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.quartz.CronExpression;
 
-import java.sql.Timestamp;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 
@@ -18,10 +17,10 @@ public record PaymentCreateDto(@NotBlank(message = "Card id is mandatory")
                                String MFO,
                                @Size(min = 5, max = 12)
                                String ZKPO,
-                               @NotBlank
+                               @NotBlank(message = "Receiver name is mandatory")
                                String receiverName,
-                               @NotNull
-                               Double amount,
-                               @NotNull
-                               String withdrawalPeriod) {
+                               @NotNull(message = "Amount is mandatory")
+                               BigDecimal amount,
+                               @NotNull(message = "Withdrawal period is mandatory")
+                               Long withdrawalPeriod) {
 }

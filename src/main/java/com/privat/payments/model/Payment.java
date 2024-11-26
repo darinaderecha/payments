@@ -2,8 +2,8 @@ package com.privat.payments.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.quartz.CronExpression;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
@@ -26,9 +26,9 @@ public class Payment {
 
     private String receiverName;
 
-    private Double amount;
+    private BigDecimal amount;
 
-    private String withdrawalPeriod;
+    private Long withdrawalPeriod;
 
     public Payment() {
     }
@@ -39,8 +39,8 @@ public class Payment {
                    String mfo,
                    String zkpo,
                    String receiverName,
-                   Double amount,
-                   String withdrawalPeriod) {
+                   BigDecimal amount,
+                   Long withdrawalPeriod) {
         this.regularPaymentId = regularPaymentId;
         this.card = card;
         this.iban = iban;
@@ -100,20 +100,19 @@ public class Payment {
         this.receiverName = receiverName;
     }
 
-    public Double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public String getWithdrawalPeriod() {
+    public Long getWithdrawalPeriod() {
         return withdrawalPeriod;
     }
 
-    public void setWithdrawalPeriod(CronExpression cronExpression) {
-        this.withdrawalPeriod = cronExpression.toString();
+    public void setWithdrawalPeriod(Long withdrawalPeriod) {
+        this.withdrawalPeriod = withdrawalPeriod;
     }
-
 }
