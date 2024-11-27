@@ -1,5 +1,0 @@
-ALTER TABLE client
-DROP COLUMN IF EXISTS birthdate;
-
-ALTER TABLE client
-DROP COLUMN IF EXISTS phone_number;

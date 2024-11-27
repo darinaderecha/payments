@@ -2,17 +2,13 @@ CREATE TABLE IF NOT EXISTS card (
     card_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     client_id UUID NOT NULL,
     card_number VARCHAR(16) UNIQUE NOT NULL,
-    cvv VARCHAR(3) NOT NULL,
-    expiration_date TIMESTAMP NOT NULL,
-    iban VARCHAR(29) UNIQUE NOT NULL,
-    balance NUMERIC,
     CONSTRAINT fk_client FOREIGN KEY (client_id) REFERENCES client(client_id)
 );
 
-CREATE TABLE IF NOT EXISTS regular_payment (
-    regular_payment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+CREATE TABLE IF NOT EXISTS payment (
+    payment_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     card_id UUID NOT NULL,
-    iban VARCHAR(29) NOT NULL,
+    iban VARCHAR(34) NOT NULL,
     mfo VARCHAR(6)  NOT NULL,
     zkpo VARCHAR(10) NOT NULL,
     receiver_name VARCHAR(255) NOT NULL,
@@ -23,8 +19,8 @@ CREATE TABLE IF NOT EXISTS regular_payment (
 CREATE TABLE IF NOT EXISTS charge (
     charge_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     charge_time TIMESTAMP,
-    regular_payment_id UUID NOT NULL,
+    payment_id UUID NOT NULL,
     amount NUMERIC,
-    status CHAR(1) CHECK (status IN ('A', 'S')),
-    CONSTRAINT fk_regular_payment FOREIGN KEY (regular_payment_id) REFERENCES regular_payment(regular_payment_id)
+    status varchar(10) check (status in ('ACTIVE','SUSPENDED')),
+    CONSTRAINT fk_payment FOREIGN KEY (payment_id) REFERENCES payment(payment_id)
 );
