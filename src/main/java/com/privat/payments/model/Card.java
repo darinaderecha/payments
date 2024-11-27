@@ -2,8 +2,6 @@ package com.privat.payments.model;
 
 import jakarta.persistence.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,14 +19,6 @@ public class Card {
 
     private String cardNumber;
 
-    private String cvv;
-
-    private LocalDate expirationDate;
-
-    private String iban;
-
-    private BigDecimal balance;
-
     @OneToMany(mappedBy = "card")
     private List<Payment> payments;
 
@@ -38,18 +28,10 @@ public class Card {
 
     public Card(UUID cardId,
                 Client client,
-                String cardNumber,
-                String cvv,
-                LocalDate expirationDate,
-                String iban,
-                BigDecimal balance) {
+                String cardNumber) {
         this.cardId = cardId;
         this.client = client;
         this.cardNumber = cardNumber;
-        this.cvv = cvv;
-        this.expirationDate = expirationDate;
-        this.iban = iban;
-        this.balance = balance;
     }
 
     public UUID getCardId() {
@@ -76,35 +58,5 @@ public class Card {
         this.cardNumber = cardNumber;
     }
 
-    public String getCvv() {
-        return cvv;
-    }
 
-    public void setCvv(String cvv) {
-        this.cvv = cvv;
-    }
-
-    public LocalDate getExpirationDate() {
-        return expirationDate;
-    }
-
-    public void setExpirationDate(LocalDate expirationDate) {
-        this.expirationDate = expirationDate;
-    }
-
-    public String getIban() {
-        return iban;
-    }
-
-    public void setIban(String iban) {
-        this.iban = iban;
-    }
-
-    public BigDecimal getBalance() {
-        return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
 }

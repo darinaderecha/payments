@@ -15,13 +15,14 @@ public class Charge {
     private UUID chargeId;
 
     @ManyToOne
-    @JoinColumn(name = "regular_payment_id")
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
     private LocalDateTime chargeTime;
 
     private BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     public Charge() {

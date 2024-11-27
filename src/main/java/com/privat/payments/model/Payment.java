@@ -4,15 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "regular_payment")
+@Table(name = "payment")
 public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID regularPaymentId;
+    private UUID paymentId;
 
     @ManyToOne
     @JoinColumn(name = "card_id")
@@ -30,6 +31,10 @@ public class Payment {
 
     private Long withdrawalPeriod;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "payment")
+    private List<Charge> chargeList;
+
     public Payment() {
     }
 
@@ -41,7 +46,7 @@ public class Payment {
                    String receiverName,
                    BigDecimal amount,
                    Long withdrawalPeriod) {
-        this.regularPaymentId = regularPaymentId;
+        this.paymentId = regularPaymentId;
         this.card = card;
         this.iban = iban;
         this.mfo = mfo;
@@ -49,15 +54,14 @@ public class Payment {
         this.receiverName = receiverName;
         this.amount = amount;
         this.withdrawalPeriod = withdrawalPeriod;
-
     }
 
-    public UUID getRegularPaymentId() {
-        return regularPaymentId;
+    public UUID getPaymentId() {
+        return paymentId;
     }
 
-    public void setRegularPaymentId(UUID regularPaymentId) {
-        this.regularPaymentId = regularPaymentId;
+    public void setPaymentId(UUID regularPaymentId) {
+        this.paymentId = regularPaymentId;
     }
     @JsonIgnore
     public Card getCard() {
@@ -115,4 +119,5 @@ public class Payment {
     public void setWithdrawalPeriod(Long withdrawalPeriod) {
         this.withdrawalPeriod = withdrawalPeriod;
     }
+
 }
