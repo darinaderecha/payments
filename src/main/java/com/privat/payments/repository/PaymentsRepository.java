@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface RegularPaymentsRepository extends JpaRepository<Payment, UUID> {
+public interface PaymentsRepository extends JpaRepository<Payment, UUID> {
 
     @Query("SELECT p " +
             "FROM Payment p " +
@@ -22,6 +22,5 @@ public interface RegularPaymentsRepository extends JpaRepository<Payment, UUID> 
     @Query("SELECT p " +
             "FROM Payment p " +
             "WHERE p.zkpo = :zkpo")
-    List<Payment> findReceiverZKPO(@Param("zkpo") String zkpo);
-
+    List<Payment> findByReceiverZKPO(@Param("zkpo") String zkpo);
 }

@@ -15,6 +15,6 @@ public interface ChargeRepository extends JpaRepository<Charge, UUID> {
     @Query("SELECT ch " +
             "FROM Charge ch " +
             "JOIN ch.payment p " +
-            "WHERE p.regularPaymentId = :regularPaymentId")
-    List<Charge> findByRegularPaymentId(@Param("regularPaymentId") UUID regularPaymentId);
+            "WHERE p.paymentId = :paymentId")
+    List<Charge> findByRegularPaymentId(@Param("paymentId") UUID regularPaymentId);
 }
