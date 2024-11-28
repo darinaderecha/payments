@@ -53,9 +53,9 @@ class PaymentControllerTest {
         Payment mockPayment = new Payment();
         mockPayment.setPaymentId(paymentId);
         mockPayment.setCard(mockCard);
-        mockPayment.setIban(paymentCreateDto.IBAN());
-        mockPayment.setMfo(paymentCreateDto.MFO());
-        mockPayment.setZkpo(paymentCreateDto.ZKPO());
+        mockPayment.setIban(paymentCreateDto.iban());
+        mockPayment.setMfo(paymentCreateDto.mfo());
+        mockPayment.setZkpo(paymentCreateDto.zkpo());
         mockPayment.setReceiverName(paymentCreateDto.receiverName());
         mockPayment.setAmount(paymentCreateDto.amount());
         mockPayment.setWithdrawalPeriod(paymentCreateDto.withdrawalPeriod());
@@ -338,7 +338,7 @@ class PaymentControllerTest {
 
         assertNotNull(response);
         assertEquals(404, response.getStatusCode().value());
-        assertEquals("No payments found for ZKPO: " + zkpo, response.getBody());
+        assertEquals("No payments found for zkpo: " + zkpo, response.getBody());
 
         verify(paymentsRepository).findByReceiverZKPO(zkpo);
     }

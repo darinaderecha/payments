@@ -39,9 +39,9 @@ public class PaymentController {
         logger.info("Card is found with an id " + paymentDTO.card());
         Payment payment = new Payment();
         payment.setCard(card);
-        payment.setIban(paymentDTO.IBAN());
-        payment.setMfo(paymentDTO.MFO());
-        payment.setZkpo(paymentDTO.ZKPO());
+        payment.setIban(paymentDTO.iban());
+        payment.setMfo(paymentDTO.mfo());
+        payment.setZkpo(paymentDTO.zkpo());
         payment.setReceiverName(paymentDTO.receiverName());
         payment.setAmount(paymentDTO.amount());
         payment.setWithdrawalPeriod(paymentDTO.withdrawalPeriod());
@@ -64,9 +64,9 @@ public class PaymentController {
         logger.info("Card is found with an id " + paymentDTO.card());
 
         payment.setCard(card);
-        payment.setIban(paymentDTO.IBAN());
-        payment.setMfo(paymentDTO.MFO());
-        payment.setZkpo(paymentDTO.ZKPO());
+        payment.setIban(paymentDTO.iban());
+        payment.setMfo(paymentDTO.mfo());
+        payment.setZkpo(paymentDTO.zkpo());
         payment.setReceiverName(paymentDTO.receiverName());
         payment.setAmount(paymentDTO.amount());
         payment.setWithdrawalPeriod(paymentDTO.withdrawalPeriod());
@@ -115,14 +115,14 @@ public class PaymentController {
 
     @GetMapping("/by-zkpo/{zkpo}")
     public ResponseEntity<?> findPaymentByZKPO(@PathVariable("zkpo") String zkpo) {
-        logger.info("Searching for payments with ZKPO: " + zkpo);
+        logger.info("Searching for payments with zkpo: " + zkpo);
 
         List<Payment> payments = paymentsRepository.findByReceiverZKPO(zkpo);
         if (payments.isEmpty()) {
-            logger.warn("No payments found for receiver ZKPO: " + zkpo);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No payments found for ZKPO: " + zkpo);
+            logger.warn("No payments found for receiver zkpo: " + zkpo);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No payments found for zkpo: " + zkpo);
         }
-        logger.info("Found " + payments.size() + " payments for receiver ZKPO: " + zkpo);
+        logger.info("Found " + payments.size() + " payments for receiver zkpo: " + zkpo);
         return ResponseEntity.ok(payments);
     }
 
