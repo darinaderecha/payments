@@ -7,13 +7,14 @@ import com.privat.payments.model.Payment;
 import com.privat.payments.repository.ChargeRepository;
 import com.privat.payments.repository.PaymentsRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -89,11 +90,13 @@ public class ChargeController {
         }
 
         @GetMapping("/payment/{paymentId}")
-        public ResponseEntity<List<ChargeDto>> findChargesByPaymentId(@PathVariable("paymentId") UUID paymentId) {
-            List<Charge> charges = chargeRepository.findByRegularPaymentId(paymentId);
+        public ResponseEntity<List<ChargeDto>> findChargesByPaymentId(@PathVariable("paymentId") UUID paymentId,
+                                                                      @RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "100") int size) {
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Charge> charges = chargeRepository.findByRegularPaymentId(paymentId, pageable);
             if (charges.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                        .body(Collections.emptyList());
+                    return ResponseEntity.noContent().build();
             }
             List<ChargeDto> chargeDtos = new ArrayList<>();
             for (Charge charge : charges){
