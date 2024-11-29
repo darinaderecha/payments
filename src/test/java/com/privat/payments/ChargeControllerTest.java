@@ -13,6 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
@@ -276,39 +280,44 @@ class ChargeControllerTest {
         mockCharge.setAmount(amount);
         mockCharge.setStatus(status);
 
-        List<Charge> mockCharges = Collections.singletonList(mockCharge);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Charge> mockPage = new PageImpl<>(Collections.singletonList(mockCharge), pageable, 1);
 
-        Mockito.when(chargeRepository.findByRegularPaymentId(paymentId)).thenReturn(mockCharges);
+        Mockito.when(chargeRepository.findByRegularPaymentId(paymentId, pageable)).thenReturn(mockPage);
 
-        ResponseEntity<List<ChargeDto>> response = chargeController.findChargesByPaymentId(paymentId);
+        ResponseEntity<List<ChargeDto>> response = chargeController.findChargesByPaymentId(paymentId, pageable.getPageNumber(), pageable.getPageSize());
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
         List<ChargeDto> chargeDtos = response.getBody();
         assertNotNull(chargeDtos);
         assertEquals(1, chargeDtos.size());
-        ChargeDto chargeDto = chargeDtos.getFirst();
+        ChargeDto chargeDto = chargeDtos.get(0);
         assertEquals(chargeId, chargeDto.chargeId());
         assertEquals(paymentId, chargeDto.payment());
         assertEquals(amount, chargeDto.amount());
         assertEquals(status, chargeDto.status());
         assertEquals(now, chargeDto.chargeTime());
 
-        Mockito.verify(chargeRepository).findByRegularPaymentId(paymentId);
+        Mockito.verify(chargeRepository).findByRegularPaymentId(paymentId, pageable);
     }
 
     @Test
     void testFindChargesByPaymentIdWithNoCharges() {
         UUID paymentId = UUID.randomUUID();
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Charge> mockPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
 
-        Mockito.when(chargeRepository.findByRegularPaymentId(paymentId)).thenReturn(Collections.emptyList());
+        Mockito.when(chargeRepository.findByRegularPaymentId(paymentId, pageable)).thenReturn(mockPage);
 
-        ResponseEntity<List<ChargeDto>> response = chargeController.findChargesByPaymentId(paymentId);
+        ResponseEntity<List<ChargeDto>> response = chargeController.findChargesByPaymentId(paymentId, pageable.getPageNumber(), pageable.getPageSize());
+
         assertNotNull(response);
         assertEquals(204, response.getStatusCode().value());
-        assertNotNull(response.getBody());
-        assertTrue(response.getBody().isEmpty());
+        assertNull(response.getBody());
 
-        Mockito.verify(chargeRepository).findByRegularPaymentId(paymentId);
+        Mockito.verify(chargeRepository).findByRegularPaymentId(paymentId, pageable);
     }
+
+
 }

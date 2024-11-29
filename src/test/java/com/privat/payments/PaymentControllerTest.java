@@ -12,6 +12,10 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 
 
@@ -28,12 +32,14 @@ class PaymentControllerTest {
     private PaymentsRepository paymentsRepository;
     private CardRepository cardRepository;
     private PaymentController paymentController;
+    private Pageable pageable;
 
     @BeforeEach
     public void setUp() {
         paymentsRepository = mock(PaymentsRepository.class);
         cardRepository = mock(CardRepository.class);
         paymentController = new PaymentController(paymentsRepository, cardRepository);
+        pageable = PageRequest.of(0, 8);
     }
 
     //savePayment
@@ -45,7 +51,7 @@ class PaymentControllerTest {
         BigDecimal amount = BigDecimal.valueOf(100.00);
 
         PaymentCreateDto paymentCreateDto = new PaymentCreateDto(cardId, "UA1234567890",
-                "300335", "1234567890", "John Doe", amount, 1000l);
+                "300335", "1234567890", "John Doe", amount, 1000L);
 
         Card mockCard = new Card();
         mockCard.setCardId(cardId);
@@ -105,7 +111,7 @@ class PaymentControllerTest {
         BigDecimal amount = BigDecimal.valueOf(200.00);
 
         PaymentCreateDto paymentCreateDto = new PaymentCreateDto(cardId, "UA9876543210",
-                "123456", "9876543210", "Jane Doe", amount, 1000l);
+                "123456", "9876543210", "Jane Doe", amount, 1000L);
 
         Card mockCard = new Card();
         mockCard.setCardId(cardId);
@@ -276,73 +282,108 @@ class PaymentControllerTest {
     @Test
     void testFindPaymentByITN() {
         String itn = "1234567890";
+        UUID cardId = UUID.randomUUID();
+        UUID paymentId = UUID.randomUUID();
+        BigDecimal amount = BigDecimal.valueOf(100.00);
+
+        Card mockCard = new Card();
+        mockCard.setCardId(cardId);
+
         Payment mockPayment = new Payment();
-        mockPayment.setPaymentId(UUID.randomUUID());
+        mockPayment.setPaymentId(paymentId);
+        mockPayment.setCard(mockCard);
+        mockPayment.setIban("UA1234567890");
+        mockPayment.setMfo("300335");
+        mockPayment.setZkpo("1234567890");
+        mockPayment.setReceiverName("Kolya Kol");
+        mockPayment.setAmount(amount);
+        mockPayment.setWithdrawalPeriod(1000L);
 
-        when(paymentsRepository.findByClientITN(itn)).thenReturn(Collections.singletonList(mockPayment));
+        Page<Payment> mockPage = new PageImpl<>(Collections.singletonList(mockPayment), pageable, 1);
 
-        ResponseEntity<?> response = paymentController.findPaymentByITN(itn);
+        when(paymentsRepository.findByClientITN(itn, pageable)).thenReturn(mockPage);
+
+        ResponseEntity<List<PaymentDto>> response = paymentController.findPaymentByITN(itn, pageable.getPageNumber(), pageable.getPageSize());
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
-        assertTrue(((List<?>) response.getBody()).size() > 0);
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals(mockPayment.getPaymentId(), response.getBody().getFirst().id());
 
-        verify(paymentsRepository).findByClientITN(itn);
+        verify(paymentsRepository).findByClientITN(itn, pageable);
     }
 
     @Test
     void testFindPaymentByITN_NoPaymentsFound() {
         String itn = "1234567890";
+        Page<Payment> mockPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
 
-        when(paymentsRepository.findByClientITN(itn)).thenReturn(Collections.emptyList());
+        when(paymentsRepository.findByClientITN(itn, pageable)).thenReturn(mockPage);
 
-        ResponseEntity<?> response = paymentController.findPaymentByITN(itn);
+        ResponseEntity<List<PaymentDto>> response = paymentController.findPaymentByITN(itn, pageable.getPageNumber(), pageable.getPageSize());
 
         assertNotNull(response);
-        assertEquals(404, response.getStatusCode().value());
-        assertEquals("No payments found for ITN: " + itn, response.getBody());
+        assertEquals(204, response.getStatusCode().value());
+        assertNull(response.getBody());
 
-        verify(paymentsRepository).findByClientITN(itn);
+        verify(paymentsRepository).findByClientITN(itn, pageable);
     }
+
 
     //findbyZKPO
 
     @Test
     void testFindPaymentByZKPO_WithResults() {
         String zkpo = "1234567890";
+        UUID cardId = UUID.randomUUID();
+        UUID paymentId = UUID.randomUUID();
+        BigDecimal amount = BigDecimal.valueOf(100.00);
+
+        Card mockCard = new Card();
+        mockCard.setCardId(cardId);
+
         Payment mockPayment = new Payment();
-        mockPayment.setPaymentId(UUID.randomUUID());
+        mockPayment.setPaymentId(paymentId);
+        mockPayment.setCard(mockCard);
+        mockPayment.setIban("UA1234567890");
+        mockPayment.setMfo("300335");
         mockPayment.setZkpo(zkpo);
+        mockPayment.setReceiverName("Kolya Kol");
+        mockPayment.setAmount(amount);
+        mockPayment.setWithdrawalPeriod(1000L);
 
-        when(paymentsRepository.findByReceiverZKPO(zkpo)).thenReturn(Collections.singletonList(mockPayment));
+        Page<Payment> mockPage = new PageImpl<>(Collections.singletonList(mockPayment), pageable, 1);
 
-        ResponseEntity<?> response = paymentController.findPaymentByZKPO(zkpo);
+        when(paymentsRepository.findByReceiverZKPO(zkpo, pageable)).thenReturn(mockPage);
+
+        ResponseEntity<List<PaymentDto>> response = paymentController.findPaymentByZKPO(zkpo, pageable.getPageNumber(), pageable.getPageSize());
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
-        assertInstanceOf(List.class, response.getBody());
-        List<Payment> payments = (List<Payment>) response.getBody();
-        assertEquals(1, payments.size());
-        assertEquals(zkpo, payments.getFirst().getZkpo());
+        List<PaymentDto> paymentDtos = response.getBody();
+        assertNotNull(paymentDtos);
+        assertEquals(1, paymentDtos.size());
+        assertEquals(zkpo, paymentDtos.getFirst().zkpo());
 
-        verify(paymentsRepository).findByReceiverZKPO(zkpo);
+        verify(paymentsRepository).findByReceiverZKPO(zkpo, pageable);
     }
 
     @Test
     void testFindPaymentByZKPO_NoResults() {
         String zkpo = "9876543210";
 
-        when(paymentsRepository.findByReceiverZKPO(zkpo)).thenReturn(Collections.emptyList());
+        Page<Payment> mockPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
 
-        ResponseEntity<?> response = paymentController.findPaymentByZKPO(zkpo);
+        when(paymentsRepository.findByReceiverZKPO(zkpo, pageable)).thenReturn(mockPage);
+
+        ResponseEntity<?> response = paymentController.findPaymentByZKPO(zkpo, pageable.getPageNumber(), pageable.getPageSize());
 
         assertNotNull(response);
-        assertEquals(404, response.getStatusCode().value());
-        assertEquals("No payments found for zkpo: " + zkpo, response.getBody());
+        assertEquals(204, response.getStatusCode().value());
 
-        verify(paymentsRepository).findByReceiverZKPO(zkpo);
+        verify(paymentsRepository).findByReceiverZKPO(zkpo, pageable);
     }
-
 
     //get all
 
@@ -375,7 +416,12 @@ class PaymentControllerTest {
 
         when(paymentsRepository.findAll()).thenReturn(mockPayments);
 
-        ResponseEntity<List<PaymentDto>> response = paymentController.getAllPayments();
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<Payment> mockPage = new PageImpl<>(mockPayments, pageable, mockPayments.size());
+
+        when(paymentsRepository.findAll(any(Pageable.class))).thenReturn(mockPage);
+
+        ResponseEntity<List<PaymentDto>> response = paymentController.getAllPayments(0, 100);
 
         assertNotNull(response);
         assertEquals(200, response.getStatusCode().value());
@@ -385,21 +431,22 @@ class PaymentControllerTest {
         assertEquals(paymentId1, paymentDtos.get(0).id());
         assertEquals(paymentId2, paymentDtos.get(1).id());
 
-        verify(paymentsRepository).findAll();
+        verify(paymentsRepository).findAll(any(Pageable.class));
     }
+
 
     @Test
     void testGetAllPayments_NoResults() {
-        when(paymentsRepository.findAll()).thenReturn(Collections.emptyList());
+        Pageable pageable = PageRequest.of(0, 100);
+        Page<Payment> mockPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
 
-        ResponseEntity<List<PaymentDto>> response = paymentController.getAllPayments();
+        when(paymentsRepository.findAll(any(Pageable.class))).thenReturn(mockPage);
+
+        ResponseEntity<List<PaymentDto>> response = paymentController.getAllPayments(0, 100);
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCode().value());
-        List<PaymentDto> paymentDtos = response.getBody();
-        assertNotNull(paymentDtos);
-        assertTrue(paymentDtos.isEmpty());
+        assertEquals(204, response.getStatusCode().value());
 
-        verify(paymentsRepository).findAll();
+        verify(paymentsRepository).findAll(any(Pageable.class));
     }
 }
